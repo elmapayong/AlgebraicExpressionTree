@@ -7,16 +7,13 @@
 using namespace std;
 
 int main(){
-	string exp = "35+(6*7)";
+	string exp = "35+6*7";
 	string lala = "!";
 
 	ExpressionTree str;
-	//Node *tree = str.makeTree(exp);
+	Node *tree = str.makeTree(exp);
 
-	vector<expression> list;
-	list = str.makeExpList(exp);
-
-	cout << list[0].value << " " << list[list.size()-1].value << endl;
+	 
 	
 
 	//cout << isdigit(str[2]);
