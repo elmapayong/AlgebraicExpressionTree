@@ -21,27 +21,27 @@ Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
 	int i = end;
 	bool foundOp = false;
 	bool foundLowest = false;
+	Node *temp = nullptr;
 	
-	//only contains a number
-	if (begin == end){
-		Node* temp = new Node(list[i].value, true);
-		return temp;
-	}
+
 	//expression given is inside parenthesis
-	else if (list[begin].value == '(' && list[end].value == ')'){
+	if (list[begin].value == '(' && list[end].value == ')'){
 		//adjust to only look inside its contents
 		++begin;
 		--end;
 		i = end;
-		//nothing was inside the parenthesis
-		if (begin == end){
+
+		//nothing inside parenthesis
+		if (end < begin){
 			return nullptr;
 		}
-		
-		//no terminating parenthesis
-		else{
-			return nullptr;
-		}
+	}
+
+
+	//only contains a number
+	if (begin == end){
+		temp = new Node(list[i].value, true);
+		return temp;
 	}
 	//find left and right sides
 	else{
@@ -69,10 +69,18 @@ Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
 			--i;
 
 		} while (!foundLowest && i != begin);
+
+		////make operation root
+		//
+
+		////find and attach left side
+		//Node *left = orderTree(list, begin, (i - 1));
+		//Node *right = orderTree(list, (i + 1), end);
+		
 	}
 
-
-	return nullptr;
+	//reaches here if invalid. returns nullptr
+	return temp;
 }
 
 
