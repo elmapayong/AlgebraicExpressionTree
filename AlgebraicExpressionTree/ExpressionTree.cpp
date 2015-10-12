@@ -27,12 +27,20 @@ Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
 		Node* temp = new Node(list[i].value, true);
 		return temp;
 	}
-	//expressions given is inside parenthesis
-	else if (list[begin].value == '('){
-		if (list[end].value == ')'){
-			++begin;
-			--end;
-			i = end;
+	//expression given is inside parenthesis
+	else if (list[begin].value == '(' && list[end].value == ')'){
+		//adjust to only look inside its contents
+		++begin;
+		--end;
+		i = end;
+		//nothing was inside the parenthesis
+		if (begin == end){
+			return nullptr;
+		}
+		
+		//no terminating parenthesis
+		else{
+			return nullptr;
 		}
 	}
 	//find left and right sides
@@ -51,38 +59,27 @@ Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
 				}
 			}
 			//found parenthesis
-
+			if (list[i].value == ')'){
+				i = skipInsideParanthesis(list, begin, --i);
+				//no matching '('
+				if (i == -1){
+					return nullptr;
+				}
+			}
 			--i;
 
 		} while (!foundLowest && i != begin);
 	}
 
-	cout << "lowest found: " << indexOfLowest << endl;
 
 	return nullptr;
 }
-
-//if it's an operation
-	//if already found one:
-		//if it's lower, replace lowest with that
-		// then parse the left and right of it
-			//attach left
-			//attach right
-	//if haven't found one
-		//then set it as lowest
-//if it's a parenthesis
-	//keep going left until you find the end
-
-//if nothing was found, it means it's a number node
-	//make a number node and return it
-	
-
 
 
 
 
 vector<expression> ExpressionTree::parseExp(const std::string exp){
-	char currChar;
+//	char currChar;
 	int start, temp;
 	int strLength = exp.length();
 	vector<expression> expList;
@@ -128,4 +125,30 @@ vector<expression> ExpressionTree::parseExp(const std::string exp){
 	}
 
 	return expList;
+}
+
+
+//returns -1 if corresponding ( not found in range
+//else returns index of (
+int ExpressionTree::skipInsideParanthesis(vector<expression> list, int begin, int end){
+	int i = end;
+
+	do{
+		//found another parenthesis
+		if (list[i].value == ')'){
+			i = skipInsideParanthesis(list, begin, --i);
+			//no matching '('
+			if (i == -1){
+				return -1;
+			}
+		}
+	} while (list[--i].value != '(' && i >= begin);
+
+	//no matching '(' found
+	if (i == begin){
+		return -1;
+	}
+	else{
+		return i;
+	}
 }
