@@ -7,11 +7,16 @@
 using namespace std;
 
 int main(){
-	string exp = "35+(6*7)/8";
+	//string exp = "35+(6*7)/8";
+	string exp = "(6*(7/3)";
 	string lala = "!";
 
 	ExpressionTree str;
 	Node *tree = str.makeTree(exp);
+
+	if (tree == nullptr){
+		cout << "invalid expression" << endl;
+	}
 
 	 
 	

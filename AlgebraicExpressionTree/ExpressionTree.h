@@ -19,7 +19,7 @@ public:
 	Node* makeTree(const std::string);
 	Node* orderTree(vector<expression>, int, int);
 	vector<expression> parseExp(const std::string);
-	int skipInsideParanthesis(vector<expression>, int, int);
+	int skipInsideParenthesis(vector<expression>, int, int);
 private:
 	void makeNode(int, bool);
 };

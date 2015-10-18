@@ -1,7 +1,6 @@
 #include "ExpressionTree.h"
 
 
-
 Node* ExpressionTree::makeTree(const std::string expStr){
 	Node *root;
 	int begin = 0;
@@ -46,9 +45,23 @@ Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
 	//find left and right sides
 	else{
 		do{
-			//found operator
+			//found operator or parenthesis
 			if (list[i].isNum == false){
-				if (list[i].value == '+' || list[i].value == '-'){
+				//found parenthesis
+				if (list[i].value == ')'){
+					i = skipInsideParenthesis(list, begin, --i);
+					//no matching '('
+					if (i == -1){
+						return nullptr;
+					}
+				}
+				//shouldn't come across ( without first hitting a )
+				//no matching parenthesis error
+				else if (list[i].value == '('){
+					return nullptr;
+				}
+
+				else if (list[i].value == '+' || list[i].value == '-'){
 					foundLowest = true;
 					indexOfLowest = i;
 				}
@@ -58,24 +71,18 @@ Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
 					indexOfLowest = i;
 				}
 			}
-			//found parenthesis
-			if (list[i].value == ')'){
-				i = skipInsideParanthesis(list, begin, --i);
-				//no matching '('
-				if (i == -1){
-					return nullptr;
-				}
-			}
 			--i;
 
-		} while (!foundLowest && i != begin);
+		} while (!foundLowest && i >= begin);
 
-		////make operation root
-		//
-
-		////find and attach left side
-		//Node *left = orderTree(list, begin, (i - 1));
-		//Node *right = orderTree(list, (i + 1), end);
+		//make operation root
+		Node *root = new Node(list[indexOfLowest].value, false);
+		
+		//recursively find the left and right sides
+		root->left = orderTree(list, begin, (indexOfLowest - 1));
+		root->right = orderTree(list, (indexOfLowest + 1), end);
+		
+		return root;
 		
 	}
 
@@ -138,22 +145,23 @@ vector<expression> ExpressionTree::parseExp(const std::string exp){
 
 //returns -1 if corresponding ( not found in range
 //else returns index of (
-int ExpressionTree::skipInsideParanthesis(vector<expression> list, int begin, int end){
+int ExpressionTree::skipInsideParenthesis(vector<expression> list, int begin, int end){
 	int i = end;
 
 	do{
 		//found another parenthesis
 		if (list[i].value == ')'){
-			i = skipInsideParanthesis(list, begin, --i);
+			i = skipInsideParenthesis(list, begin, --i);
 			//no matching '('
 			if (i == -1){
 				return -1;
 			}
 		}
-	} while (list[--i].value != '(' && i >= begin);
+	} while (--i >= begin && list[i].value != '(');
 
+	++i;
 	//no matching '(' found
-	if (i == begin){
+	if (i == begin && list[i].value != '('){
 		return -1;
 	}
 	else{
