@@ -16,7 +16,7 @@ Node* ExpressionTree::makeTree(const std::string expStr){
 
 
 Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
-	int indexOfLowest = 0;
+	int indexOfLowest = -1;
 	int i = end;
 	bool foundOp = false;
 	bool foundLowest = false;
@@ -37,10 +37,12 @@ Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
 	}
 
 
-	//only contains a number
 	if (begin == end){
-		temp = new Node(list[i].value, true);
-		return temp;
+		//only contains a number
+		if (list[i].isNum == true){
+			temp = new Node(list[i].value, true);
+			return temp;
+		}
 	}
 	//find left and right sides
 	else{
@@ -55,7 +57,7 @@ Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
 						return nullptr;
 					}
 				}
-				//shouldn't come across ( without first hitting a )
+				//shouldn't come across '(' without first hitting a ')'
 				//no matching parenthesis error
 				else if (list[i].value == '('){
 					return nullptr;
@@ -68,22 +70,48 @@ Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
 				//found higher precedence, save it but
 				//keep looking for a lower one
 				else{
-					indexOfLowest = i;
+					//save current operator
+					if (indexOfLowest == -1){
+						indexOfLowest = i;
+					}
+					//previous operator lower than current one 
+					//take the lower one and exit loop
+					else{
+						foundLowest = true;
+					}
 				}
 			}
 			--i;
 
 		} while (!foundLowest && i >= begin);
 
-		//make operation root
-		Node *root = new Node(list[indexOfLowest].value, false);
-		
-		//recursively find the left and right sides
-		root->left = orderTree(list, begin, (indexOfLowest - 1));
-		root->right = orderTree(list, (indexOfLowest + 1), end);
-		
-		return root;
-		
+		//operator with no left or right operand
+		if ((indexOfLowest - 1) < begin || (indexOfLowest + 1) > end){
+			return nullptr;
+		}
+		//operator is next to another operator
+		else if (list[indexOfLowest - 1].isNum == false || list[indexOfLowest + 1].isNum == false){
+			return nullptr;
+		}
+		else{
+			//make the operation a root
+			Node *root = new Node(list[indexOfLowest].value, false);
+
+			//recursively find the left and right sides
+			root->left = orderTree(list, begin, (indexOfLowest - 1));
+			root->right = orderTree(list, (indexOfLowest + 1), end);
+
+			//left or right side is invalid
+			if (root->left == nullptr || root->right == nullptr){
+				delete root->left;
+				delete root->right;
+				delete root;
+				return nullptr;
+			}
+			else{
+				return root;
+			}
+		}
 	}
 
 	//reaches here if invalid. returns nullptr

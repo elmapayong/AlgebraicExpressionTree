@@ -7,8 +7,10 @@
 using namespace std;
 
 int main(){
-	//string exp = "35+(6*7)/8";
-	string exp = "(6*(7/3)";
+	//string exp = "35+6*7/8";
+	string exp = "8*7/3";
+	//string exp = "7/*3";
+
 	string lala = "!";
 
 	ExpressionTree str;
