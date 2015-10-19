@@ -67,18 +67,17 @@ Node* ExpressionTree::orderTree(vector<expression> list, int begin, int end){
 					foundLowest = true;
 					indexOfLowest = i;
 				}
-				//found higher precedence, save it but
-				//keep looking for a lower one
+				//found higher precedence (/ or *), save it if it's the first
+				//one found but keep looking for a lower one
 				else{
-					//save current operator
+					//first one found
 					if (indexOfLowest == -1){
 						indexOfLowest = i;
 					}
-					//previous operator lower than current one 
-					//take the lower one and exit loop
-					else{
-						foundLowest = true;
-					}
+
+					//ignore all other / * found because
+					//they're a higher precedence than
+					//previous one found
 				}
 			}
 			--i;
@@ -194,5 +193,53 @@ int ExpressionTree::skipInsideParenthesis(vector<expression> list, int begin, in
 	}
 	else{
 		return i;
+	}
+}
+
+
+int ExpressionTree::getAnswer(Node *root){
+	int left = 0, right = 0, answer = 0;
+	
+	//tree is empty
+	if (root == nullptr){
+		return 0;
+	}
+	else{
+		//get left operand
+		if (root->left->isNumber() == false){
+			left = getAnswer(root->left);
+		}
+		else{
+			left = root->left->getValue();
+		}
+
+		//get right operand
+		if (root->right->isNumber() == false){
+			right = getAnswer(root->right);
+		}
+		else{
+			right = root->right->getValue();
+		}
+
+		switch (root->getValue()){
+		case '*':
+			answer = left * right;
+			cout << left << " * " << right << " = " << answer << endl;
+			break;
+		case '/':
+			answer = left / right;
+			cout << left << " / " << right << " = " << answer << endl;
+			break;
+		case '+':
+			answer = left + right;
+			cout << left << " + " << right << " = " << answer << endl;
+			break;
+		case '-':
+			answer = left - right;
+			cout << left << " - " << right << " = " << answer << endl;
+			break;
+		}
+
+		return answer;
 	}
 }
